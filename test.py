@@ -1,52 +1,23 @@
 from kivy.app import App
-from kivy.lang import Builder
-from kivy.uix.button import Button
-from kivy.clock import Clock
-from kivy.properties import StringProperty
-
-from time import strftime
-
-kv = """
-<Home@Screen>:
-    BoxLayout:
-        orientation: 'vertical'
-        MyClock:
-            font_size: 50
-            text: self.current_time
-        Button:
-            text: 'Set Alarm'
-            on_release: app.root.ids.sm.current = 'alarm_page'
-<AlarmPage@Screen>:
-    Button:
-        text: 'Put alarms on this page'
-        on_release: app.root.ids.sm.current = 'home_page'
-
-BoxLayout:
-    ScreenManager:
-        id: sm
-        Home:
-            name: 'home_page'
-        AlarmPage:
-            name: 'alarm_page'
-
-"""
+from kivy.uix.image import Image
+from kivy.uix.behaviors import ToggleButtonBehavior
 
 
-class MyClock(Button):
-    current_time = StringProperty(strftime("%I:%M:%S %p"))
-
+class MyButton(ToggleButtonBehavior, Image):
     def __init__(self, **kwargs):
-        Clock.schedule_interval(self.update_time, 1)
-        super().__init__(**kwargs)
+        super(MyButton, self).__init__(**kwargs)
+        self.source = 'atlas://data/images/defaulttheme/checkbox_off'
 
-    def update_time(self, dt):
-        self.current_time = strftime("%I:%M:%S %p")
+    def on_state(self, widget, value):
+        if value == 'down':
+            self.source = 'atlas://data/images/defaulttheme/checkbox_on'
+        else:
+            self.source = 'atlas://data/images/defaulttheme/checkbox_off'
 
 
-class MainApp(App):
+class SampleApp(App):
     def build(self):
-        return Builder.load_string(kv)
+        return MyButton()
 
 
-if __name__ == "__main__":
-    MainApp().run()
+SampleApp().run()
